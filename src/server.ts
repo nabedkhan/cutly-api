@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 
 import { appConfig } from "@/config/app-config";
+import { logger } from "@/lib/winston";
 
 import apiRoutes from "@/routes";
 
@@ -23,5 +24,5 @@ app.use("/api", apiRoutes);
 
 // Start server
 app.listen(appConfig.PORT, () => {
-  console.log(`🚀 Server is running on ${appConfig.PORT}`);
+  logger.info(`🚀 Server is running on ${appConfig.PORT}`);
 });
