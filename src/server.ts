@@ -23,6 +23,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", apiRoutes);
 
 // Start server
-app.listen(appConfig.PORT, () => {
+const server = app.listen(appConfig.PORT, () => {
   logger.info(`🚀 Server is running on ${appConfig.PORT}`);
 });
+
+// Graceful shutdown
+const processTermination = (event: string) => {
+  logger.error(`${event} signal received: shutting down gracefully`);
+  server.close(() => {
+    logger.error("Server closed");
+    process.exit(0);
+  });
+};
+
+process.on("SIGTERM", () => processTermination("SIGTERM"));
+process.on("SIGINT", () => processTermination("SIGINT"));
