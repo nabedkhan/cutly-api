@@ -6,6 +6,8 @@ import dotenv from "dotenv";
 import { appConfig } from "@/config/app-config";
 import { logger } from "@/lib/winston";
 
+import { errorMiddleware } from "@/middlewares/error";
+
 import apiRoutes from "@/routes";
 
 // Load environment variables
@@ -22,6 +24,9 @@ app.use(express.urlencoded({ extended: true }));
 // API routes handling
 app.use("/api", apiRoutes);
 
+// Global error handler
+app.use(errorMiddleware);
+
 // Start server
 const server = app.listen(appConfig.PORT, () => {
   logger.info(`🚀 Server is running on ${appConfig.PORT}`);
@@ -29,9 +34,9 @@ const server = app.listen(appConfig.PORT, () => {
 
 // Graceful shutdown
 const processTermination = (event: string) => {
-  logger.error(`${event} signal received: shutting down gracefully`);
+  logger.info(`${event} signal received: shutting down gracefully`);
   server.close(() => {
-    logger.error("Server closed");
+    logger.info("Server closed");
     process.exit(0);
   });
 };

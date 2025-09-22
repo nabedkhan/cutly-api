@@ -1,5 +1,7 @@
 import { Router, Request, Response } from "express";
 
+import authRoutes from "./auth";
+
 const router: Router = Router();
 
 // Health check endpoint
@@ -19,5 +21,7 @@ router.get("/", (_req: Request, res: Response) => {
     status: "running"
   });
 });
+
+router.use("/auth", authRoutes);
 
 export default router;
