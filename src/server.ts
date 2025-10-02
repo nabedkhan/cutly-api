@@ -1,17 +1,14 @@
 import express from "express";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
+
+import { logger } from "@/lib/winston";
+import { connectDB, disconnectDB } from "@/lib/mongoose";
 
 import { appConfig } from "@/config/app-config";
-import { logger } from "@/lib/winston";
-
-import { errorMiddleware } from "@/middlewares/error";
+import { errorMiddleware, notFoundMiddleware } from "@/middlewares/error";
 
 import apiRoutes from "@/routes";
-
-// Load environment variables
-dotenv.config();
 
 const app = express();
 
@@ -24,22 +21,37 @@ app.use(express.urlencoded({ extended: true }));
 // API routes handling
 app.use("/api", apiRoutes);
 
+// Not found middleware
+app.use(notFoundMiddleware);
+
 // Global error handler
 app.use(errorMiddleware);
 
-// Start server
-const server = app.listen(appConfig.PORT, () => {
-  logger.info(`🚀 Server is running on ${appConfig.PORT}`);
-});
+async function main() {
+  try {
+    // Connect to database
+    await connectDB();
 
-// Graceful shutdown
-const processTermination = (event: string) => {
-  logger.info(`${event} signal received: shutting down gracefully`);
-  server.close(() => {
-    logger.info("Server closed");
-    process.exit(0);
-  });
-};
+    // Start server
+    const server = app.listen(appConfig.PORT, () => {
+      logger.info(`🚀 Server is running on ${appConfig.PORT}`);
+    });
 
-process.on("SIGTERM", () => processTermination("SIGTERM"));
-process.on("SIGINT", () => processTermination("SIGINT"));
+    // Graceful shutdown
+    const processTermination = (event: string) => {
+      logger.info(`${event} signal received: shutting down gracefully`);
+      server.close(() => {
+        disconnectDB();
+        logger.info("Server closed successfully");
+        process.exit(0);
+      });
+    };
+
+    process.on("SIGTERM", () => processTermination("SIGTERM"));
+    process.on("SIGINT", () => processTermination("SIGINT"));
+  } catch (error) {
+    process.exit(1);
+  }
+}
+
+main();

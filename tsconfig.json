@@ -9,18 +9,19 @@
     },
 
     // Environment Settings - Node.js compatible
-    "module": "commonjs",
-    "target": "es2022",
-    // "moduleResolution": ,
+    "module": "CommonJS",
+    "target": "ES2022",
+    "moduleResolution": "Node",
 
     // For Node.js
     "lib": ["es2022"],
     "types": ["node"],
+    "typeRoots": ["./node_modules/@types", "./src/types"],
 
     // Other Outputs
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": true,
-    "declarationMap": true,
+    "declarationMap": false,
     "removeComments": true,
 
     // Stricter Typechecking Options

@@ -1,19 +1,29 @@
 import type { Request, Response, NextFunction } from "express";
-import { AppError } from "@/utils/errors";
+import { AppError, NotFoundError } from "@/utils/errors";
+
+export function notFoundMiddleware(req: Request, _res: Response, next: NextFunction) {
+  const error = new NotFoundError(`Resource not found: ${req.originalUrl}`);
+  next(error);
+}
 
 export function errorMiddleware(err: Error, _req: Request, res: Response, _next: NextFunction) {
   if (err instanceof AppError) {
-    res.status(err.status).json({
+    return res.status(err.status).json({
       code: err.code,
       message: err.message,
       issues: err.issues
     });
-
-    return;
   }
 
-  res.status(500).json({
+  if (err instanceof NotFoundError) {
+    return res.status(err.status).json({
+      code: err.code,
+      message: err.message
+    });
+  }
+
+  return res.status(500).json({
     code: "INTERNAL_SERVER_ERROR",
-    message: "Internal server error"
+    message: err.message
   });
 }
