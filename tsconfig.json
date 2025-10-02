@@ -11,7 +11,7 @@
     // Environment Settings - Node.js compatible
     "module": "commonjs",
     "target": "es2022",
-    "moduleResolution": "bundler",
+    // "moduleResolution": ,
 
     // For Node.js
     "lib": ["es2022"],
