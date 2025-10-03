@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod/v4";
 
 export const registerValidator = z.object({
   name: z
@@ -10,7 +10,7 @@ export const registerValidator = z.object({
     .string({ error: "Password is required!" })
     .trim()
     .min(6, "Password must be 6 characters length"),
-  email: z.string({ error: "Email is required!" }).trim().email("Invalid email address")
+  email: z.email({ error: "Invalid email address" }).trim()
 });
 
 export const loginValidator = z.object({
@@ -18,6 +18,6 @@ export const loginValidator = z.object({
     .string({ error: "Password is required!" })
     .trim()
     .min(6, "Password must be 6 characters length"),
-  // email: z.string({ error: "Email is required!" }).trim().email("Invalid email address")
+
   email: z.email({ error: "Invalid email address" }).trim()
 });
