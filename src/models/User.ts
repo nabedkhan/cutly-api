@@ -7,6 +7,8 @@ interface UserDocument extends Document {
   password: string;
   role: string;
   totalVisits: number;
+  phone?: string;
+  photoUrl?: string;
   comparePassword(password: string): Promise<boolean>;
 }
 
@@ -41,6 +43,16 @@ const userSchema = new Schema<UserDocument>(
     totalVisits: {
       type: Number,
       default: 0
+    },
+    phone: {
+      type: String,
+      trim: true,
+      index: true,
+      max: 16
+    },
+    photoUrl: {
+      type: String,
+      trim: true
     }
   },
   {

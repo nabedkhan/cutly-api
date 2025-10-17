@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 
 import { verifyToken } from "@/lib/jsonwebtoken";
-import { UnauthorizedError } from "@/utils/errors";
+import { ForbiddenError, UnauthorizedError } from "@/utils/errors";
 
 export function authMiddleware(req: Request, _res: Response, next: NextFunction) {
   const token = req.cookies["token"];
@@ -17,4 +17,12 @@ export function authMiddleware(req: Request, _res: Response, next: NextFunction)
   } catch (error) {
     throw new UnauthorizedError("Token is invalid");
   }
+}
+
+export function adminMiddleware(req: Request, _res: Response, next: NextFunction) {
+  if (req.user?.role !== "ADMIN") {
+    throw new ForbiddenError();
+  }
+
+  next();
 }

@@ -1,4 +1,9 @@
-type ErrorCode = "BAD_REQUEST" | "UNAUTHORIZED" | "NOT_FOUND" | "INTERNAL_SERVER_ERROR";
+type ErrorCode =
+  | "BAD_REQUEST"
+  | "UNAUTHORIZED"
+  | "NOT_FOUND"
+  | "INTERNAL_SERVER_ERROR"
+  | "FORBIDDEN";
 
 export class AppError extends Error {
   status: number;
@@ -33,6 +38,12 @@ export class UnauthorizedError extends AppError {
 export class NotFoundError extends AppError {
   constructor(message = "Resource not found") {
     super(message, 404, "NOT_FOUND");
+  }
+}
+
+export class ForbiddenError extends AppError {
+  constructor(message = "Forbidden Access! You are not authorized to access this resource") {
+    super(message, 403, "FORBIDDEN");
   }
 }
 

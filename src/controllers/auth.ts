@@ -8,7 +8,7 @@ import { BadRequestError, ValidationError } from "@/utils/errors";
 import { loginValidator, registerValidator } from "@/validators/auth";
 
 export const register: RequestHandler = asyncHandler(async (req, res) => {
-  const { name, password, email } = req.body;
+  const { name, password, email } = req.body || {};
 
   const validation = registerValidator.safeParse({ name, password, email });
   if (!validation.success) {
@@ -37,7 +37,7 @@ export const register: RequestHandler = asyncHandler(async (req, res) => {
 });
 
 export const login: RequestHandler = asyncHandler(async (req, res) => {
-  const { password, email } = req.body;
+  const { password, email } = req.body || {};
 
   const validation = loginValidator.safeParse({ password, email });
   if (!validation.success) {
