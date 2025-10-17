@@ -1,7 +1,16 @@
-import { Schema, model } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 
-const userSchema = new Schema(
+interface UserDocument extends Document {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+  totalVisits: number;
+  comparePassword(password: string): Promise<boolean>;
+}
+
+const userSchema = new Schema<UserDocument>(
   {
     name: {
       type: String,
@@ -34,7 +43,14 @@ const userSchema = new Schema(
       default: 0
     }
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    methods: {
+      comparePassword(password: string) {
+        return bcrypt.compare(password, this.password);
+      }
+    }
+  }
 );
 
 userSchema.pre("save", async function (next) {

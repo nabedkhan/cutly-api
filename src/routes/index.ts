@@ -4,16 +4,19 @@ import authRoutes from "./auth";
 
 const router: Router = Router();
 
-// Health check endpoint
+// Auth routes
+router.use("/auth", authRoutes);
+
+// Health check route
 router.get("/health", (_req: Request, res: Response) => {
-  res.status(200).json({
+  res.json({
     status: "OK",
     uptime: process.uptime(),
     timestamp: new Date().toISOString()
   });
 });
 
-// Basic API route
+// Basic API route for testing
 router.get("/", (_req: Request, res: Response) => {
   res.json({
     message: "Cutly API - URL Shortener Service",
@@ -21,7 +24,5 @@ router.get("/", (_req: Request, res: Response) => {
     status: "running"
   });
 });
-
-router.use("/auth", authRoutes);
 
 export default router;

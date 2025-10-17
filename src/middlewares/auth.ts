@@ -11,9 +11,7 @@ export function authMiddleware(req: Request, _res: Response, next: NextFunction)
 
   try {
     const decoded = verifyToken(token);
-    //   req.user = decoded as { id: string; role: string; name: string; email: string };
-
-    console.log(decoded);
+    req.user = decoded;
 
     next();
   } catch (error) {

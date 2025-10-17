@@ -1,6 +1,5 @@
 import type { RequestHandler } from "express";
 import { treeifyError } from "zod/v4";
-import bcrypt from "bcrypt";
 
 import { User } from "@/models/User";
 import { generateToken } from "@/lib/jsonwebtoken";
@@ -45,12 +44,12 @@ export const login: RequestHandler = asyncHandler(async (req, res) => {
     throw new ValidationError(treeifyError(validation.error));
   }
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("password role name email");
   if (!user) {
     throw new BadRequestError("Invalid email or password");
   }
 
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+  const isPasswordCorrect = await user.comparePassword(password);
   if (!isPasswordCorrect) {
     throw new BadRequestError("Invalid email or password");
   }
@@ -70,7 +69,7 @@ export const login: RequestHandler = asyncHandler(async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
 
-  res.status(200).json({
+  res.json({
     success: true,
     message: "User logged in successfully",
     data: { token, user: payload }
@@ -80,7 +79,7 @@ export const login: RequestHandler = asyncHandler(async (req, res) => {
 export const logout: RequestHandler = asyncHandler((_req, res) => {
   res.clearCookie("token");
 
-  res.status(200).json({
+  res.json({
     success: true,
     message: "User logged out successfully",
     data: null

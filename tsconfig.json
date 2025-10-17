@@ -16,10 +16,10 @@
     // For Node.js
     "lib": ["es2022"],
     "typeRoots": ["./node_modules/@types", "./src/types"],
-    "types": ["node", "express"],
+    "types": ["node"],
 
     // Other Outputs
-    "sourceMap": false,
+    "sourceMap": true,
     "declaration": true,
     "declarationMap": false,
     "removeComments": true,
@@ -43,6 +43,11 @@
     "isolatedModules": true,
     "moduleDetection": "force"
   },
-  "include": ["src/**/*.ts", "src/types/**/*.d.ts"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"],
+    "transpileOnly": false,
+    "files": true
+  }
 }
