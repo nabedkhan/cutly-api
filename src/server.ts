@@ -9,6 +9,7 @@ import { appConfig } from "@/config/app-config";
 import { errorMiddleware, notFoundMiddleware } from "@/middlewares/error";
 
 import apiRoutes from "@/routes";
+import rootRoutes from "@/routes/root";
 
 const app = express();
 
@@ -20,6 +21,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // API routes handling
 app.use("/api", apiRoutes);
+
+// Redirect, health check and basic API routes
+app.use(rootRoutes);
 
 // Not found middleware
 app.use(notFoundMiddleware);
