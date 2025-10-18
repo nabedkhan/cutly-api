@@ -11,10 +11,21 @@ export const logger = createLogger({
   format: combine(
     timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
     loggerFormat,
-    colorize({ all: true, colors: { info: "blue", error: "red", warn: "yellow" } })
+    colorize({
+      all: true,
+      colors: {
+        info: "blue",
+        error: "red",
+        warn: "yellow"
+      }
+    })
   ),
   transports: [
     new transports.Console(),
-    new transports.File({ filename: "error.log", level: "error", format: json() })
+    new transports.File({
+      filename: "error.log",
+      level: "error",
+      format: json()
+    })
   ]
 });

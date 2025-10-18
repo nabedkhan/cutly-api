@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 
 import authRoutes from "./auth";
 import usersRoutes from "./users";
+import linksRoutes from "./links";
 
 const router: Router = Router();
 
@@ -10,6 +11,9 @@ router.use("/auth", authRoutes);
 
 // Users routes
 router.use("/users", usersRoutes);
+
+// Links routes
+router.use("/links", linksRoutes);
 
 // Health check route
 router.get("/health", (_req: Request, res: Response) => {

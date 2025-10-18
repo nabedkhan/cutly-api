@@ -1,4 +1,5 @@
 import { treeifyError } from "zod/v4";
+import { isValidObjectId } from "mongoose";
 import type { RequestHandler } from "express";
 
 import { User } from "@/models/User";
@@ -16,8 +17,9 @@ export const getUsers: RequestHandler = asyncHandler(async (_req, res) => {
 });
 
 export const getUser: RequestHandler = asyncHandler(async (req, res) => {
-  const { id } = req.params || {};
-  if (!id) {
+  const { id } = req.params;
+
+  if (!isValidObjectId(id)) {
     throw new BadRequestError("Invalid request");
   }
 
@@ -37,7 +39,7 @@ export const updateUser: RequestHandler = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const userId = req.user!.id;
 
-  if (!id) {
+  if (!isValidObjectId(id)) {
     throw new BadRequestError("Invalid request");
   }
 
@@ -74,8 +76,9 @@ export const updateUser: RequestHandler = asyncHandler(async (req, res) => {
 });
 
 export const deleteUser: RequestHandler = asyncHandler(async (req, res) => {
-  const { id } = req.params || {};
-  if (!id) {
+  const { id } = req.params;
+
+  if (!isValidObjectId(id)) {
     throw new BadRequestError("Invalid request");
   }
 
