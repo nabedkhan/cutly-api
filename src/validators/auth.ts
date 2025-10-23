@@ -21,3 +21,7 @@ export const loginValidator = z.object({
 
   email: z.email({ error: "Invalid email address" }).trim()
 });
+
+export type RegisterPayload = z.infer<typeof registerValidator>;
+
+export type LoginPayload = z.infer<typeof loginValidator>;
