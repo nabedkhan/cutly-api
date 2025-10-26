@@ -2,13 +2,13 @@ import { treeifyError } from "zod/v4";
 import { isValidObjectId } from "mongoose";
 import type { RequestHandler } from "express";
 
-import { User } from "@/models/User";
+import { UserService } from "@/services/users";
 import { asyncHandler } from "@/utils/async-handler";
 import { updateUserValidator } from "@/validators/users";
-import { BadRequestError, ForbiddenError, NotFoundError, ValidationError } from "@/utils/errors";
+import { BadRequestError, ValidationError } from "@/utils/errors";
 
 export const getUsers: RequestHandler = asyncHandler(async (_req, res) => {
-  const users = await User.find().select("-password -__v");
+  const users = await UserService.getUsers();
   res.json({
     success: true,
     message: "List of users fetched successfully",
@@ -17,16 +17,13 @@ export const getUsers: RequestHandler = asyncHandler(async (_req, res) => {
 });
 
 export const getUser: RequestHandler = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params as { id: string };
 
   if (!isValidObjectId(id)) {
     throw new BadRequestError("Invalid request");
   }
 
-  const user = await User.findById(id).select("-password -__v");
-  if (!user) {
-    throw new NotFoundError("User not found");
-  }
+  const user = await UserService.getUser(id);
 
   res.json({
     success: true,
@@ -36,7 +33,7 @@ export const getUser: RequestHandler = asyncHandler(async (req, res) => {
 });
 
 export const updateUser: RequestHandler = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params as { id: string };
   const userId = req.user!.id;
 
   if (!isValidObjectId(id)) {
@@ -50,42 +47,23 @@ export const updateUser: RequestHandler = asyncHandler(async (req, res) => {
     throw new ValidationError(treeifyError(validation.error));
   }
 
-  if (phone) {
-    const phoneAlreadyExists = await User.findOne({ phone }).select("_id");
-    if (phoneAlreadyExists) {
-      throw new BadRequestError("Phone number already taken");
-    }
-  }
-
-  const userExists = await User.findById(id).select("_id");
-  if (!userExists) {
-    throw new NotFoundError("Invalid request");
-  }
-
-  if (userId !== userExists.id) {
-    throw new ForbiddenError("Forbidden access! You are not authorized to access this resource");
-  }
-
-  await User.updateOne({ _id: id }, { name, phone, photoUrl });
+  await UserService.updateUser(id, userId, { name, phone, photoUrl });
 
   res.json({
     success: true,
     message: "User updated successfully",
-    data: { _id: userExists.id }
+    data: null
   });
 });
 
 export const deleteUser: RequestHandler = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params as { id: string };
 
   if (!isValidObjectId(id)) {
     throw new BadRequestError("Invalid request");
   }
 
-  const user = await User.findByIdAndDelete(id).select("_id");
-  if (!user) {
-    throw new NotFoundError("User not found");
-  }
+  await UserService.deleteUser(id);
 
   res.json({
     success: true,
