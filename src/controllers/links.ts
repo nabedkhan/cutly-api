@@ -2,11 +2,11 @@ import { treeifyError } from "zod/v4";
 import { isValidObjectId } from "mongoose";
 import type { RequestHandler } from "express";
 
+import { LinksService } from "@/services/links";
 import { asyncHandler } from "@/utils/async-handler";
 import { BadRequestError, ValidationError } from "@/utils/errors";
 import { createLinkValidator, updateLinkValidator } from "@/validators/links";
 import { RequestQuery } from "@/types/request";
-import { LinksService } from "@/services/links";
 
 export const getLinks: RequestHandler = asyncHandler(async (req, res) => {
   const query = req.query as RequestQuery;
