@@ -51,8 +51,7 @@ export const updateUser: RequestHandler = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    message: "User updated successfully",
-    data: null
+    message: "User updated successfully"
   });
 });
 
@@ -67,7 +66,6 @@ export const deleteUser: RequestHandler = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    message: "User deleted successfully",
-    data: null
+    message: "User deleted successfully"
   });
 });

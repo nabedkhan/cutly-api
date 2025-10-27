@@ -48,8 +48,7 @@ export class AuthController {
     res.clearCookie("token");
     res.json({
       success: true,
-      message: "User logged out successfully",
-      data: null
+      message: "User logged out successfully"
     });
   });
 }
