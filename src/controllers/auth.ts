@@ -1,14 +1,14 @@
 import type { RequestHandler } from "express";
 import { treeifyError } from "zod/v4";
 
+import { AuthService } from "@/services/auth";
 import { ValidationError } from "@/utils/errors";
 import { asyncHandler } from "@/utils/async-handler";
 import { loginValidator, registerValidator } from "@/validators/auth";
 import { appConfig } from "@/config/app-config";
-import { ServiceAuth } from "@/interfaces/auth";
 
 export class AuthController {
-  constructor(private readonly authService: ServiceAuth) {}
+  constructor(private readonly authService: AuthService) {}
 
   register: RequestHandler = asyncHandler(async (req, res) => {
     const { name, password, email } = req.body || {};

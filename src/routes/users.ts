@@ -1,9 +1,12 @@
 import { Router } from "express";
 
-import * as usersController from "@/controllers/users";
+import { UserService } from "@/services/users";
+import { UsersController } from "@/controllers/users";
 import { adminMiddleware, authMiddleware } from "@/middlewares/auth";
 
 const router: Router = Router();
+
+const usersController = new UsersController(new UserService());
 
 // Get all users route: '/api/users'
 router.get("/", [authMiddleware, adminMiddleware], usersController.getUsers);

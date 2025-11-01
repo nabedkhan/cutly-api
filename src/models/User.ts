@@ -9,6 +9,8 @@ export interface UserDocument extends Document {
   totalVisits: number;
   phone?: string;
   photoUrl?: string;
+  createdAt: Date;
+  updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
 }
 

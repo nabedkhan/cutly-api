@@ -1,24 +1,44 @@
-import { User, UserDocument } from "@/models/User";
+import { User } from "@/models/User";
 import { BadRequestError, ForbiddenError, NotFoundError } from "@/utils/errors";
+import { UserResponse, IUserService } from "@/interfaces/users";
 
-type UserResponse = Omit<UserDocument, "password" | "comparePassword">;
-
-export class UserService {
-  static async getUsers(): Promise<UserResponse[]> {
+export class UserService implements IUserService {
+  async getUsers(): Promise<UserResponse[]> {
     const users = await User.find().select("-password -__v");
-    return users;
+
+    return users.map((user) => ({
+      id: user.id,
+      role: user.role,
+      name: user.name,
+      email: user.email,
+      totalVisits: user.totalVisits,
+      phone: user.phone,
+      photoUrl: user.photoUrl,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    }));
   }
 
-  static async getUser(id: string): Promise<UserResponse> {
+  async getUser(id: string): Promise<UserResponse> {
     const user = await User.findById(id).select("-password -__v");
     if (!user) {
       throw new NotFoundError("User not found");
     }
 
-    return user;
+    return {
+      id: user.id,
+      role: user.role,
+      name: user.name,
+      email: user.email,
+      totalVisits: user.totalVisits,
+      phone: user.phone,
+      photoUrl: user.photoUrl,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
   }
 
-  static async updateUser(id: string, userId: string, data: Partial<UserDocument>): Promise<void> {
+  async updateUser(id: string, userId: string, data: Partial<UserResponse>) {
     const { name, phone, photoUrl } = data;
 
     if (phone) {
@@ -40,12 +60,10 @@ export class UserService {
     await User.updateOne({ _id: id }, { name, phone, photoUrl });
   }
 
-  static async deleteUser(id: string): Promise<{ _id: string }> {
+  async deleteUser(id: string) {
     const user = await User.findByIdAndDelete(id).select("_id");
     if (!user) {
       throw new NotFoundError("User not found");
     }
-
-    return { _id: user.id };
   }
 }

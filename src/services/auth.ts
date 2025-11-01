@@ -2,9 +2,9 @@ import { User } from "@/models/User";
 import { generateToken } from "@/lib/jsonwebtoken";
 import { BadRequestError } from "@/utils/errors";
 import { LoginPayload, RegisterPayload } from "@/validators/auth";
-import { ServiceAuth, UserResponse } from "@/interfaces/auth";
+import { IAuthService, UserResponse } from "@/interfaces/auth";
 
-export class AuthService implements ServiceAuth {
+export class AuthService implements IAuthService {
   async register({ email, name, password }: RegisterPayload): Promise<UserResponse> {
     const userExists = await User.findOne({ email });
 

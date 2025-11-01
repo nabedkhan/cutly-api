@@ -7,7 +7,7 @@ export interface UserResponse {
   email: string;
 }
 
-export interface ServiceAuth {
+export interface IAuthService {
   register: (payload: RegisterPayload) => Promise<UserResponse>;
   login: (payload: LoginPayload) => Promise<{ token: string; user: UserResponse }>;
 }
