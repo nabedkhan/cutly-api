@@ -1,14 +1,16 @@
 import type { RequestHandler } from "express";
 import { treeifyError } from "zod/v4";
 
-import { AuthService } from "@/services/auth";
 import { ValidationError } from "@/utils/errors";
 import { asyncHandler } from "@/utils/async-handler";
 import { loginValidator, registerValidator } from "@/validators/auth";
 import { appConfig } from "@/config/app-config";
+import { ServiceAuth } from "@/interfaces/auth";
 
 export class AuthController {
-  static register: RequestHandler = asyncHandler(async (req, res) => {
+  constructor(private readonly authService: ServiceAuth) {}
+
+  register: RequestHandler = asyncHandler(async (req, res) => {
     const { name, password, email } = req.body || {};
 
     const validation = registerValidator.safeParse({ name, password, email });
@@ -16,7 +18,7 @@ export class AuthController {
       throw new ValidationError(treeifyError(validation.error));
     }
 
-    const createdUser = await AuthService.register({ email, name, password });
+    const createdUser = await this.authService.register({ email, name, password });
 
     res.status(201).json({
       success: true,
@@ -25,7 +27,7 @@ export class AuthController {
     });
   });
 
-  static login: RequestHandler = asyncHandler(async (req, res) => {
+  login: RequestHandler = asyncHandler(async (req, res) => {
     const { password, email } = req.body || {};
 
     const validation = loginValidator.safeParse({ password, email });
@@ -33,7 +35,7 @@ export class AuthController {
       throw new ValidationError(treeifyError(validation.error));
     }
 
-    const { token, user } = await AuthService.login({ email, password });
+    const { token, user } = await this.authService.login({ email, password });
 
     res.cookie("token", token, appConfig.COOKIE_OPTIONS);
 
@@ -44,7 +46,7 @@ export class AuthController {
     });
   });
 
-  static logout: RequestHandler = asyncHandler((_req, res) => {
+  logout: RequestHandler = asyncHandler((_req, res) => {
     res.clearCookie("token");
     res.json({
       success: true,

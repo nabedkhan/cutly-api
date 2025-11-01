@@ -2,9 +2,10 @@ import { User } from "@/models/User";
 import { generateToken } from "@/lib/jsonwebtoken";
 import { BadRequestError } from "@/utils/errors";
 import { LoginPayload, RegisterPayload } from "@/validators/auth";
+import { ServiceAuth, UserResponse } from "@/interfaces/auth";
 
-export class AuthService {
-  static async register({ email, name, password }: RegisterPayload) {
+export class AuthService implements ServiceAuth {
+  async register({ email, name, password }: RegisterPayload): Promise<UserResponse> {
     const userExists = await User.findOne({ email });
 
     if (userExists) {
@@ -12,18 +13,17 @@ export class AuthService {
     }
 
     const createdUser = await User.create({ name, password, email });
-
     await createdUser.save();
 
     return {
-      id: createdUser._id,
+      id: createdUser.id,
       role: createdUser.role,
       name: createdUser.name,
       email: createdUser.email
     };
   }
 
-  static async login({ email, password }: LoginPayload) {
+  async login({ email, password }: LoginPayload): Promise<{ token: string; user: UserResponse }> {
     const user = await User.findOne({ email }).select("password role name email");
     if (!user) {
       throw new BadRequestError("Invalid email or password");
@@ -35,7 +35,7 @@ export class AuthService {
     }
 
     const payload = {
-      id: user._id,
+      id: user.id,
       role: user.role,
       name: user.name,
       email: user.email
