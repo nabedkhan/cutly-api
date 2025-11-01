@@ -1,6 +1,5 @@
 import { Router } from "express";
 
-// import * as authController from "@/controllers/auth";
 import { AuthController } from "@/controllers/auth";
 import { authMiddleware } from "@/middlewares/auth";
 
