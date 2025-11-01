@@ -1,11 +1,11 @@
-import { treeifyError } from "zod/v4";
 import { isValidObjectId } from "mongoose";
 import type { RequestHandler } from "express";
 
 import { UserService } from "@/services/users";
+import { validate } from "@/utils/validate";
+import { BadRequestError } from "@/utils/errors";
 import { asyncHandler } from "@/utils/async-handler";
 import { updateUserValidator } from "@/validators/users";
-import { BadRequestError, ValidationError } from "@/utils/errors";
 
 export class UsersController {
   constructor(private readonly userService: UserService) {}
@@ -45,12 +45,13 @@ export class UsersController {
 
     const { name, phone, photoUrl } = req.body || {};
 
-    const validation = updateUserValidator.safeParse({ name, phone, photoUrl });
-    if (!validation.success) {
-      throw new ValidationError(treeifyError(validation.error));
-    }
+    const validation = await validate(updateUserValidator, { name, phone, photoUrl });
 
-    await this.userService.updateUser(id, userId, { name, phone, photoUrl });
+    await this.userService.updateUser(id, userId, {
+      name: validation.name,
+      phone: validation.phone,
+      photoUrl: validation.photoUrl
+    });
 
     res.json({
       success: true,

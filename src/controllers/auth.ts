@@ -1,8 +1,7 @@
 import type { RequestHandler } from "express";
-import { treeifyError } from "zod/v4";
 
 import { AuthService } from "@/services/auth";
-import { ValidationError } from "@/utils/errors";
+import { validate } from "@/utils/validate";
 import { asyncHandler } from "@/utils/async-handler";
 import { loginValidator, registerValidator } from "@/validators/auth";
 import { appConfig } from "@/config/app-config";
@@ -13,12 +12,13 @@ export class AuthController {
   register: RequestHandler = asyncHandler(async (req, res) => {
     const { name, password, email } = req.body || {};
 
-    const validation = registerValidator.safeParse({ name, password, email });
-    if (!validation.success) {
-      throw new ValidationError(treeifyError(validation.error));
-    }
+    const validation = await validate(registerValidator, { name, password, email });
 
-    const createdUser = await this.authService.register({ email, name, password });
+    const createdUser = await this.authService.register({
+      email: validation.email,
+      name: validation.name,
+      password: validation.password
+    });
 
     res.status(201).json({
       success: true,
@@ -30,12 +30,12 @@ export class AuthController {
   login: RequestHandler = asyncHandler(async (req, res) => {
     const { password, email } = req.body || {};
 
-    const validation = loginValidator.safeParse({ password, email });
-    if (!validation.success) {
-      throw new ValidationError(treeifyError(validation.error));
-    }
+    const validation = await validate(loginValidator, { password, email });
 
-    const { token, user } = await this.authService.login({ email, password });
+    const { token, user } = await this.authService.login({
+      email: validation.email,
+      password: validation.password
+    });
 
     res.cookie("token", token, appConfig.COOKIE_OPTIONS);
 

@@ -1,10 +1,10 @@
-import { treeifyError } from "zod/v4";
 import { isValidObjectId } from "mongoose";
 import type { RequestHandler } from "express";
 
 import { LinksService } from "@/services/links";
+import { validate } from "@/utils/validate";
+import { BadRequestError } from "@/utils/errors";
 import { asyncHandler } from "@/utils/async-handler";
-import { BadRequestError, ValidationError } from "@/utils/errors";
 import { createLinkValidator, updateLinkValidator } from "@/validators/links";
 import { RequestQuery } from "@/types/request";
 
@@ -94,15 +94,12 @@ export const getLinksByUser: RequestHandler = asyncHandler(async (req, res) => {
 export const createLink: RequestHandler = asyncHandler(async (req, res) => {
   const { title, destinationUrl, backHalf } = req.body || {};
 
-  const validation = createLinkValidator.safeParse({ title, destinationUrl, backHalf });
-  if (!validation.success) {
-    throw new ValidationError(treeifyError(validation.error));
-  }
+  const validation = await validate(createLinkValidator, { title, destinationUrl, backHalf });
 
   const createdLink = await LinksService.createLink({
-    title,
-    backHalf,
-    destinationUrl,
+    title: validation.title,
+    backHalf: validation.backHalf!,
+    destinationUrl: validation.destinationUrl,
     userId: req.user!.id
   });
 
@@ -123,10 +120,7 @@ export const updateLink: RequestHandler = asyncHandler(async (req, res) => {
 
   const { title, destinationUrl, backHalf } = req.body || {};
 
-  const validation = updateLinkValidator.safeParse({ title, destinationUrl, backHalf });
-  if (!validation.success) {
-    throw new ValidationError(treeifyError(validation.error));
-  }
+  await validate(updateLinkValidator, { title, destinationUrl, backHalf });
 
   await LinksService.updateLink(id, { title, destinationUrl, backHalf, userId });
 

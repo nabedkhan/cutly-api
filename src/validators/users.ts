@@ -5,3 +5,5 @@ export const updateUserValidator = z.object({
   phone: z.string().trim().max(16, "Maximum 16 characters allowed").optional(),
   photoUrl: z.string().trim().optional()
 });
+
+export type UpdateUserPayload = z.infer<typeof updateUserValidator>;

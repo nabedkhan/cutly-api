@@ -1,3 +1,5 @@
+import { UpdateUserPayload } from "@/validators/users";
+
 export interface UserResponse {
   id: string;
   role: string;
@@ -13,6 +15,6 @@ export interface UserResponse {
 export interface IUserService {
   getUsers: () => Promise<UserResponse[]>;
   getUser: (id: string) => Promise<UserResponse>;
-  updateUser: (id: string, userId: string, data: Partial<UserResponse>) => Promise<void>;
+  updateUser: (id: string, userId: string, data: UpdateUserPayload) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
 }

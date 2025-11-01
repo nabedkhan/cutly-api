@@ -1,6 +1,7 @@
 import { User } from "@/models/User";
 import { BadRequestError, ForbiddenError, NotFoundError } from "@/utils/errors";
 import { UserResponse, IUserService } from "@/interfaces/users";
+import { UpdateUserPayload } from "@/validators/users";
 
 export class UserService implements IUserService {
   async getUsers(): Promise<UserResponse[]> {
@@ -38,7 +39,7 @@ export class UserService implements IUserService {
     };
   }
 
-  async updateUser(id: string, userId: string, data: Partial<UserResponse>) {
+  async updateUser(id: string, userId: string, data: UpdateUserPayload) {
     const { name, phone, photoUrl } = data;
 
     if (phone) {
