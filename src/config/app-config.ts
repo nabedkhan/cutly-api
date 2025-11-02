@@ -1,10 +1,7 @@
 import dotenv from "dotenv";
-import path from "node:path";
 
 // Load environment variables
-dotenv.config({
-  path: path.resolve(__dirname, "../../.env.local")
-});
+dotenv.config();
 
 export const appConfig = {
   PORT: parseInt(process.env["PORT"] || "5000", 10),

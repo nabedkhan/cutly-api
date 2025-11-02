@@ -1,9 +1,12 @@
 import { Router } from "express";
 
-import * as linksController from "@/controllers/links";
+import { LinksService } from "@/services/links";
+import { LinksController } from "@/controllers/links";
 import { adminMiddleware, authMiddleware } from "@/middlewares/auth";
 
 const router: Router = Router();
+
+const linksController = new LinksController(new LinksService());
 
 // Get links by user id route: '/api/links/user'
 router.get("/user", authMiddleware, linksController.getLinksByUser);

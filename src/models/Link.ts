@@ -7,6 +7,8 @@ export interface LinkDocument extends Document {
   destinationUrl: string;
   totalVisits: number;
   userId: Schema.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const linkSchema = new Schema<LinkDocument>(

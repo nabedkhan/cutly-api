@@ -9,11 +9,11 @@ export class MongoDatabase {
   }
 
   async connect() {
-    if (!this.uri) {
-      throw new Error("Database URI is not defined in the environment variables");
-    }
-
     try {
+      if (!this.uri) {
+        throw new Error("Database URI is not defined in the environment variables");
+      }
+
       await mongoose.connect(this.uri, {
         serverApi: {
           version: "1",
